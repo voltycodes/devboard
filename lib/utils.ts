@@ -85,28 +85,38 @@ export async function lcCall(leetcodeID: string) {
     return null;
   }
 
-  const currYr = new Date().getFullYear();
-  const data = await fetch('https://leetcode.com/graphql/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `
-        query userProfileCalendar($username: String!, $year: Int) {
-          matchedUser(username: $username) {
-            userCalendar(year: $year) {
-              streak
-              totalActiveDays
-              submissionCalendar
+  try {
+    const currYr = new Date().getFullYear();
+    const response = await fetch('https://leetcode.com/graphql/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          query userProfileCalendar($username: String!, $year: Int) {
+            matchedUser(username: $username) {
+              userCalendar(year: $year) {
+                streak
+                totalActiveDays
+                submissionCalendar
+              }
             }
           }
-        }
-      `,
-      variables: {"username": leetcodeID, "year": currYr}
-    })
-  }).then(res => res.json()).then(resObj => resObj.data);
+        `,
+        variables: {"username": leetcodeID, "year": currYr}
+      })
+    });
 
-  return data;
+    if (!response.ok) {
+      throw new Error(`Leetcode API responded with status: ${response.status}`)
+    }
+
+    const resObj = await response.json();
+    return resObj.data;
+  } catch (error) {
+    console.error('Error fetching LeetCode API:', error);
+    return null;
+  }
 }
