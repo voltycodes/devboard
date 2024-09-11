@@ -6,7 +6,7 @@ export default function UserStats({data}: {data: any}) {
   const ghPerDay = totalGH / 365;
   const lcPerDay = totalLC / 365;
 
-
+  // formula = (gh per day + lc per day) * (current gh streak / longest gh streak) * (current lc streak / longest lc streak)
 
   const score = (ghPerDay + lcPerDay) * (lcStreak);
   return (

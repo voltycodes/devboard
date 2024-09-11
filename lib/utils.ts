@@ -31,3 +31,72 @@ export function getTileColor(githubCount: number, leetcodeCount: number) {
 
   return blendedColor;
 }
+
+export async function ghCall(githubID: string) {
+  if (!githubID) {
+    return null;
+  }
+
+  const currYr = new Date().getFullYear();
+  const data = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${process.env.GH_TOKEN}`
+    },
+    body: JSON.stringify({
+      query: `
+        query ($username: String!) {
+          user(login: $username) {
+            contributionsCollection(from: "${currYr}-01-01T00:00:00", to: "${currYr}-12-01T00:00:00") {
+              contributionCalendar {
+                totalContributions
+                weeks {
+                  contributionDays {
+                    contributionCount
+                    date
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      variables: {"username": githubID}
+    })
+  }).then(res => res.json()).then(resObj => resObj.data)
+
+  return data;
+}
+
+export async function lcCall(leetcodeID: string) {
+  if (!leetcodeID) {
+    return null;
+  }
+
+  const currYr = new Date().getFullYear();
+  const data = await fetch('https://leetcode.com/graphql/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query userProfileCalendar($username: String!, $year: Int) {
+          matchedUser(username: $username) {
+            userCalendar(year: $year) {
+              streak
+              totalActiveDays
+              submissionCalendar
+            }
+          }
+        }
+      `,
+      variables: {"username": leetcodeID, "year": currYr}
+    })
+  }).then(res => res.json()).then(resObj => resObj.data);
+
+  return data;
+}

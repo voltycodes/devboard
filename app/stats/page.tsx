@@ -1,6 +1,6 @@
 import Graph from '@/components/graph'
 import UserStats from '@/components/user-stats';
-
+import { ghCall, lcCall } from "@/lib/utils";
 interface ActivityData {
   [date: string]: {
     github?: number;
@@ -27,7 +27,7 @@ export default async function Page({ searchParams }: { searchParams: { [key: str
         </span>
       </h1>
 
-      <Graph data={data.cal} />
+      <Graph data={data?.cal} />
 
       <UserStats data={data} />
       
@@ -36,80 +36,39 @@ export default async function Page({ searchParams }: { searchParams: { [key: str
 }
 
 async function fetchData( githubID: string | null, leetcodeID: string | null) {
-  // TODO: add logic to manage null id
-  const currYr = new Date().getFullYear();
-  const ghData = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${process.env.GH_TOKEN}`
-    },
-    body: JSON.stringify({
-      query: `
-        query ($username: String!) {
-          user(login: $username) {
-            contributionsCollection(from: "${currYr}-01-01T00:00:00", to: "${currYr}-12-01T00:00:00") {
-              contributionCalendar {
-                totalContributions
-                weeks {
-                  contributionDays {
-                    contributionCount
-                    date
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
-      variables: {"username": githubID}
-    })
-  }).then(res => res.json()).then(resObj => resObj.data)
-
-  const lcData = await fetch('https://leetcode.com/graphql/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `
-        query userProfileCalendar($username: String!, $year: Int) {
-          matchedUser(username: $username) {
-            userCalendar(year: $year) {
-              streak
-              totalActiveDays
-              submissionCalendar
-            }
-          }
-        }
-      `,
-      variables: {"username": leetcodeID, "year": new Date().getFullYear()}
-    })
-  }).then(res => res.json()).then(resObj => resObj.data)
-
+  if (!(githubID || leetcodeID)) {
+    return null;
+  }
+  
+  const ghData = await ghCall(githubID || "");
+  const lcData = await lcCall(leetcodeID || "");
+  
   const cal: ActivityData = {};
-  let totalGH = ghData.user?.contributionsCollection.contributionCalendar.totalContributions || 0;
-  let totalLC = 0;
-
-  const ghCalData = ghData.user?.contributionsCollection.contributionCalendar.weeks || null;
-  if (ghCalData) {
-    for (const week of ghCalData) {
-      for (const day of week.contributionDays) {
-        if (!cal[day.date]) cal[day.date] = {};
-        cal[day.date].github =  day.contributionCount;
+  let totalGH = 0, totalLC = 0;
+  
+  totalGH = ghData.user?.contributionsCollection.contributionCalendar.totalContributions || 0;
+  
+  if (githubID && ghData) {
+    const ghCalData = ghData.user?.contributionsCollection.contributionCalendar.weeks || null;
+    if (ghCalData) {
+      for (const week of ghCalData) {
+        for (const day of week.contributionDays) {
+          if (!cal[day.date]) cal[day.date] = {};
+          cal[day.date].github =  day.contributionCount;
+        }
       }
     }
   }
-
-  const lcSubCal = JSON.parse(lcData.matchedUser?.userCalendar.submissionCalendar || null);
-  if (lcSubCal) {
-    for (const [timestamp, count] of Object.entries(lcSubCal)) {
-      const date = new Date(parseInt(timestamp) * 1000).toISOString().split('T')[0];
-      if (!cal[date]) cal[date] = {};
-      cal[date].leetcode = (cal[date].leetcode || 0) + (count as number);
-      totalLC += (count as number);
+  
+  if (leetcodeID && lcData) {
+    const lcSubCal = JSON.parse(lcData.matchedUser?.userCalendar.submissionCalendar || null);
+    if (lcSubCal) {
+      for (const [timestamp, count] of Object.entries(lcSubCal)) {
+        const date = new Date(parseInt(timestamp) * 1000).toISOString().split('T')[0];
+        if (!cal[date]) cal[date] = {};
+        cal[date].leetcode = (cal[date].leetcode || 0) + (count as number);
+        totalLC += (count as number);
+      }
     }
   }
 
@@ -117,8 +76,7 @@ async function fetchData( githubID: string | null, leetcodeID: string | null) {
     cal,
     totalGH,
     totalLC,
-    lcStreak: lcData.matchedUser?.userCalendar.streak || null,
-    lcTotalActiveDays: lcData.matchedUser?.userCalendar.totalActiveDays || null,
-    
+    lcStreak: lcData?.matchedUser?.userCalendar?.streak || null,
+    lcTotalActiveDays: lcData?.matchedUser?.userCalendar?.totalActiveDays || null, 
   };
 }
