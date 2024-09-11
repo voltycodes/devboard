@@ -37,37 +37,47 @@ export async function ghCall(githubID: string) {
     return null;
   }
 
-  const currYr = new Date().getFullYear();
-  const data = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${process.env.GH_TOKEN}`
-    },
-    body: JSON.stringify({
-      query: `
-        query ($username: String!) {
-          user(login: $username) {
-            contributionsCollection(from: "${currYr}-01-01T00:00:00", to: "${currYr}-12-01T00:00:00") {
-              contributionCalendar {
-                totalContributions
-                weeks {
-                  contributionDays {
-                    contributionCount
-                    date
+  try {
+    const currYr = new Date().getFullYear();
+    const response = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${process.env.GH_TOKEN}`
+      },
+      body: JSON.stringify({
+        query: `
+          query ($username: String!) {
+            user(login: $username) {
+              contributionsCollection(from: "${currYr}-01-01T00:00:00", to: "${currYr}-12-01T00:00:00") {
+                contributionCalendar {
+                  totalContributions
+                  weeks {
+                    contributionDays {
+                      contributionCount
+                      date
+                    }
                   }
                 }
               }
             }
           }
-        }
-      `,
-      variables: {"username": githubID}
-    })
-  }).then(res => res.json()).then(resObj => resObj.data)
+        `,
+        variables: {"username": githubID}
+      })
+    });
 
-  return data;
+    if (!response.ok) {
+      throw new Error(`GitHub API responded with status: ${response.status}`);
+    }
+
+    const resObj = await response.json();
+    return resObj.data;
+  } catch (error) {
+    console.error('Error fetching GitHub data:', error);
+    return null;
+  }
 }
 
 export async function lcCall(leetcodeID: string) {

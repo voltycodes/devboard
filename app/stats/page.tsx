@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: { searchParams: { [key: str
   )
 }
 
-async function fetchData( githubID: string | null, leetcodeID: string | null) {
+async function fetchData(githubID: string | null, leetcodeID: string | null) {
   if (!(githubID || leetcodeID)) {
     return null;
   }
@@ -46,29 +46,24 @@ async function fetchData( githubID: string | null, leetcodeID: string | null) {
   const cal: ActivityData = {};
   let totalGH = 0, totalLC = 0;
   
-  totalGH = ghData.user?.contributionsCollection.contributionCalendar.totalContributions || 0;
-  
-  if (githubID && ghData) {
-    const ghCalData = ghData.user?.contributionsCollection.contributionCalendar.weeks || null;
-    if (ghCalData) {
-      for (const week of ghCalData) {
-        for (const day of week.contributionDays) {
-          if (!cal[day.date]) cal[day.date] = {};
-          cal[day.date].github =  day.contributionCount;
-        }
+  if (ghData && ghData.user && ghData.user.contributionsCollection) {
+    totalGH = ghData.user.contributionsCollection.contributionCalendar.totalContributions || 0;
+    const ghCalData = ghData.user.contributionsCollection.contributionCalendar.weeks || [];
+    for (const week of ghCalData) {
+      for (const day of week.contributionDays) {
+        if (!cal[day.date]) cal[day.date] = {};
+        cal[day.date].github =  day.contributionCount;
       }
     }
   }
   
-  if (leetcodeID && lcData) {
-    const lcSubCal = JSON.parse(lcData.matchedUser?.userCalendar.submissionCalendar || null);
-    if (lcSubCal) {
-      for (const [timestamp, count] of Object.entries(lcSubCal)) {
-        const date = new Date(parseInt(timestamp) * 1000).toISOString().split('T')[0];
-        if (!cal[date]) cal[date] = {};
-        cal[date].leetcode = (cal[date].leetcode || 0) + (count as number);
-        totalLC += (count as number);
-      }
+  if (lcData && lcData.matchedUser && lcData.matchedUser.userCalendar) {
+    const lcSubCal = JSON.parse(lcData.matchedUser.userCalendar.submissionCalendar || "{}");
+    for (const [timestamp, count] of Object.entries(lcSubCal)) {
+      const date = new Date(parseInt(timestamp) * 1000).toISOString().split('T')[0];
+      if (!cal[date]) cal[date] = {};
+      cal[date].leetcode = (cal[date].leetcode || 0) + (count as number);
+      totalLC += (count as number);
     }
   }
 
