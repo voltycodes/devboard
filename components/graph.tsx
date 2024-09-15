@@ -1,11 +1,14 @@
 import { format, eachDayOfInterval, getDay, startOfYear, endOfYear, differenceInDays } from 'date-fns';
 import { getTileColor } from '@/lib/utils';
+import { UTCDate } from "@date-fns/utc";
 
 export default function Graph({ data }: { data: any }) {
+
   const today = new Date();
-  const startDate = startOfYear(today);
-  const endDate = endOfYear(today);
-  const dates = eachDayOfInterval({ start: startDate, end: endDate });
+  const dates = eachDayOfInterval({ 
+    start: new UTCDate(`${today.getFullYear()}-01-01T00:00:00.000Z`),
+    end: new UTCDate(`${today.getFullYear()}-12-31T00:00:00.000Z`)
+  });
 
   const contributionLevels = [0, 1, 2, 3, 4]; // 0 is no contribution, 4 is highest
 

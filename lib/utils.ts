@@ -1,3 +1,4 @@
+import { UTCDate } from "@date-fns/utc";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -119,4 +120,94 @@ export async function lcCall(leetcodeID: string) {
     console.error('Error fetching LeetCode API:', error);
     return null;
   }
+}
+
+export function getStreaks(cal: Record<string, { github?: number; leetcode?: number }>) {
+  let lcCurrentStreak = 0;
+  let lcLongestStreak = 0;
+  let ghCurrentStreak = 0;
+  let ghLongestStreak = 0;
+  let lastLCDate: Date | null = null;
+  let lastGHDate: Date | null = null;
+
+  let topLCSubmissions: { date: string, submissions: number }[] = [];
+  let topGHContributions: { date: string, contributions: number }[] = [];
+
+  // Sort dates in ascending order
+  const sortedDates = Object.keys(cal).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+
+  // only consider dates before today
+  const today = new UTCDate();
+  const todayStr = today.toISOString().split('T')[0];
+  const todayIndex = sortedDates.indexOf(todayStr);
+  if (todayIndex !== -1) { sortedDates.splice(todayIndex + 1); }
+
+  for (const dateStr of sortedDates) {
+    const lcSubmissions = cal[dateStr]?.leetcode || 0;
+    const ghContributions = cal[dateStr]?.github || 0;
+    const currentDate = new UTCDate(dateStr);
+
+    // LeetCode streak
+    if (lcSubmissions > 0) {
+      if (!lastLCDate || isConsecutiveDay(lastLCDate, currentDate)) {
+        lcCurrentStreak++;
+      } else {
+        lcCurrentStreak = 1;
+      }
+      lastLCDate = currentDate;
+      lcLongestStreak = Math.max(lcLongestStreak, lcCurrentStreak);
+    } else if (lastLCDate && !isConsecutiveDay(lastLCDate, currentDate)) {
+      lcCurrentStreak = 0;
+    }
+
+    // Update top LeetCode submissions
+    if (lcSubmissions > 0) {
+      topLCSubmissions.push({ date: dateStr, submissions: lcSubmissions });
+      topLCSubmissions.sort((a, b) => b.submissions - a.submissions);
+      if (topLCSubmissions.length > 3) {
+        topLCSubmissions.pop();
+      }
+    }
+
+    // GitHub streak
+    if (ghContributions > 0) {
+      if (!lastGHDate || isConsecutiveDay(lastGHDate, currentDate)) {
+        ghCurrentStreak++;
+      } else {
+        ghCurrentStreak = 1;
+      }
+      lastGHDate = currentDate;
+      ghLongestStreak = Math.max(ghLongestStreak, ghCurrentStreak);
+    } else if (lastGHDate && !isConsecutiveDay(lastGHDate, currentDate)) {
+      ghCurrentStreak = 0;
+    }
+
+    // Update top GitHub contributions
+    if (ghContributions > 0) {
+      topGHContributions.push({ date: dateStr, contributions: ghContributions });
+      topGHContributions.sort((a, b) => b.contributions - a.contributions);
+      if (topGHContributions.length > 3) {
+        topGHContributions.pop();
+      }
+    }
+  }
+
+  return {
+    leetcode: { 
+      currentStreak: lcCurrentStreak, 
+      longestStreak: lcLongestStreak,
+      topDays: topLCSubmissions
+    },
+    github: { 
+      currentStreak: ghCurrentStreak, 
+      longestStreak: ghLongestStreak,
+      topDays: topGHContributions
+    }
+  };
+}
+
+function isConsecutiveDay(date1: Date, date2: Date): boolean {
+  const diffTime = Math.abs(date2.getTime() - date1.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays === 1;
 }

@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 const intensity = ['300', '500', '700', '900', '900/0'];
 const colors = ['cyan', 'emerald'].flatMap(color => 
   intensity.map(level => [`bg-${color}-${level}`, `from-${color}-${level}`, `to-${color}-${level}`])
@@ -16,6 +18,10 @@ const config: Config = {
 		"./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+		screens: {
+      'xs': '475px',
+      ...defaultTheme.screens,
+    },
   	extend: {
   		backgroundImage: {
   			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

@@ -65,3 +65,7 @@
       background: #FF0000;
   }
 }
+
+.spacemono {
+  font-family: var(--font-spacemono), monospace;
+}

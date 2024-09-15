@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Mono, VT323 } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 
 const inter = Inter({ subsets: ["latin"] });
+const vt323 = VT323({ subsets: ["latin"], weight: '400', variable: "--font-vt323" });
+const spacemono = Space_Mono({ subsets: ["latin"], weight: '400', variable: "--font-spacemono" });
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(inter.className, "dark")}>
+      <body className={cn(inter.className, vt323.variable, spacemono.variable, "dark")}>
         <Header />
         {children}
       </body>
