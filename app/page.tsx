@@ -20,20 +20,20 @@ export default function Home() {
   };
 
   return (
-    <main className="flex justify-center items-center min-h-screen">
-      <Card className="w-[350px]">
+    <main className="flex justify-center items-center min-h-screen -mt-16">
+      <Card className="w-[350px] mt-16">
         <CardHeader>
-          <CardTitle>Enter Your Profiles</CardTitle>
+          <CardTitle>Enter Your Usernames To Continue</CardTitle>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <label htmlFor="github" className="text-sm font-medium">GitHub Username</label>
-              <Input id="github" name="github" placeholder="Enter your GitHub username" />
+              <Input id="github" name="github" placeholder="kujo_qtaro" />
             </div>
             <div className="space-y-2">
               <label htmlFor="leetcode" className="text-sm font-medium">LeetCode Username</label>
-              <Input id="leetcode" name="leetcode" placeholder="Enter your LeetCode username" />
+              <Input id="leetcode" name="leetcode" placeholder="kujo_qtaro" />
             </div>
             <Button type="submit" className="w-full">Submit</Button>
           </form>
