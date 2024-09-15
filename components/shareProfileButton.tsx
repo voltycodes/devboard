@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 export default function ShareProfileButton({ghID, lcID}: {ghID: string | null, lcID: string | null}) {
   const [host, setHost] = useState(process.env.VERCEL_URL || process.env.PUBLIC_URL || '');
@@ -14,7 +15,8 @@ export default function ShareProfileButton({ghID, lcID}: {ghID: string | null, l
 
   const copyProfileLink = () => {
     const url = `${host}/stats?${ghID ? `github=${ghID}` : ''}${lcID ? `${ghID ? '&' : ''}leetcode=${lcID}` : ''}`
-    navigator.clipboard.writeText(url)
+    navigator.clipboard.writeText(url);
+    toast.success("Copied Your Profile Link To Clipboard!")
   }
 
   return (

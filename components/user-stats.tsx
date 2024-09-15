@@ -66,22 +66,20 @@ export default function UserStats({data}: {data: any}) {
 
 
   const statsData = [
-    {
-      text: "Consistency",
-      value: consistencyScore
-    },
-    {
-      text: "Activity",
-      value: activityScore
-    },
-    {
-      text: "Overall",
-      value: score
-    }
+    { text: "Consistency", value: consistencyScore },
+    { text: "Activity", value: activityScore },
+    { text: "Overall", value: score }
+  ]
+
+  const metadata = [
+    { text: 'Your Rank', value: rank },
+    { text: 'Points', value: score * 10 },
+    { text: 'Analysis', value: analysis }
   ]
 
   return (
     <div className="flex flex-col mt-4">
+      
       <Card className="my-2">
         <CardHeader className="w-full">
           <div className="flex items-center gap-2 w-full">
@@ -100,22 +98,17 @@ export default function UserStats({data}: {data: any}) {
             </div>
           </div>
         </CardHeader>
+        
         <CardContent>
-          <p>
-            <span className="w-full max-w-28 inline-block">Your Rank:</span>
-            <span className="font-mono">{rank}</span>
-          </p>
-          <p>
-            <span className="w-full max-w-28 inline-block">Points:</span>
-            <span className="font-mono">{score * 10}</span>
-          </p>
-          <p>
-            <span className="w-full max-w-28 inline-block">Analysis:</span>
-            <span className="font-mono">{analysis}</span>
-          </p>
-          
+          {metadata.map((stat, i) => (
+            <p key={i}>
+              <span className="w-full max-w-28 inline-block">{stat.text}</span>
+              <span className="font-mono">{stat.value}</span>
+            </p>
+          ))}
         </CardContent>
       </Card>
+
       <Card className="my-2">
         <CardHeader>
           <CardTitle>Your Scores</CardTitle>
