@@ -21,7 +21,7 @@ export async function generateMetadata({ searchParams }: { searchParams: { [key:
   
   return {
     title: `${title}'s devboard`,
-    description: "Check out your developer profile stats on Devboard. It's a fun way to track your progress and share your achievements with the world.",
+    description: `Check out ${title}'s profile stats on Devboard.`,
     metadataBase: new URL('https://vc-devboard.vercel.app/'),
     openGraph: {
       type: "website",
