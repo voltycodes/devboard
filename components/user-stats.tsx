@@ -84,7 +84,7 @@ export default function UserStats({data}: {data: any}) {
           <div className="flex items-center gap-2 w-full">
             <Avatar className="border-2 border-foreground/30">
               <AvatarImage src={data.ghID && `https://github.com/${data.ghID}.png`} />
-              <AvatarFallback>{data.ghID || '⬚⬚⬚⬚'}</AvatarFallback>
+              <AvatarFallback>{'⬚⬚⬚'}</AvatarFallback>
             </Avatar>
             <span>@{data.ghID || data.lcID}</span>
             <div className="flex items-center opacity-50 gap-2 ml-auto">
@@ -101,7 +101,7 @@ export default function UserStats({data}: {data: any}) {
         <CardContent>
           {metadata.map((stat, i) => (
             <p key={i}>
-              <span className="w-full max-w-28 inline-block">{stat.text}</span>
+              <span className="w-full max-w-24 sm:max-w-28 inline-block">{stat.text}</span>
               <span className="font-mono">{stat.value}</span>
             </p>
           ))}
