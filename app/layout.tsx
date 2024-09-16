@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 import { Toaster } from "@/components/ui/sonner"
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({ subsets: ["latin"] });
 const vt323 = VT323({ subsets: ["latin"], weight: '400', variable: "--font-vt323" });
@@ -47,6 +48,7 @@ export default function RootLayout({
         {children}
         <Toaster />
       </body>
+      <GoogleAnalytics gaId="G-WP96D2VE50" />
     </html>
   );
 }
