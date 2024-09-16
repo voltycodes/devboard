@@ -127,6 +127,8 @@ export function getStreaks(cal: Record<string, { github?: number; leetcode?: num
   let lcLongestStreak = 0;
   let ghCurrentStreak = 0;
   let ghLongestStreak = 0;
+  let ghConsistency = 0;
+  let lcConsistency = 0;
   let lastLCDate: Date | null = null;
   let lastGHDate: Date | null = null;
 
@@ -146,6 +148,9 @@ export function getStreaks(cal: Record<string, { github?: number; leetcode?: num
     const lcSubmissions = cal[dateStr]?.leetcode || 0;
     const ghContributions = cal[dateStr]?.github || 0;
     const currentDate = new UTCDate(dateStr);
+
+    if (ghContributions > 0) { ghConsistency++; }
+    if (lcSubmissions > 0) { lcConsistency++; }
 
     // LeetCode streak
     if (lcSubmissions > 0) {
@@ -193,15 +198,20 @@ export function getStreaks(cal: Record<string, { github?: number; leetcode?: num
   }
 
   return {
-    leetcode: { 
-      currentStreak: lcCurrentStreak, 
-      longestStreak: lcLongestStreak,
-      topDays: topLCSubmissions
+    meta: {
+      totalDays: sortedDates.length,
     },
     github: { 
       currentStreak: ghCurrentStreak, 
       longestStreak: ghLongestStreak,
-      topDays: topGHContributions
+      topDays: topGHContributions,
+      consistency: ghConsistency
+    },
+    leetcode: { 
+      currentStreak: lcCurrentStreak, 
+      longestStreak: lcLongestStreak,
+      topDays: topLCSubmissions,
+      consistency: lcConsistency
     }
   };
 }

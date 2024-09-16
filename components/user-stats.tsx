@@ -10,11 +10,10 @@ import ShareProfileButton from "./shareProfileButton";
 
 export default function UserStats({data}: {data: any}) {
   const {totalGH, totalLC, cal} = data;
+  const { leetcode, github, meta } = getStreaks(cal ?? {});
   
-  const ghPerDay = totalGH / 365;
-  const lcPerDay = totalLC / 365;
-
-  const { leetcode, github } = getStreaks(cal ?? {});
+  const ghPerDay = Math.round(totalGH / meta.totalDays * 100) /100;
+  const lcPerDay = Math.round(totalLC / meta.totalDays * 100) /100;
   
   const ghStreakRatio = (github.currentStreak / (github.longestStreak || 1));
   const lcStreakRatio = (leetcode.currentStreak / (leetcode.longestStreak || 1));
@@ -29,8 +28,8 @@ export default function UserStats({data}: {data: any}) {
     ) * 100 ) /10;
 
   const consistencyScore = Math.round(
-    ((github.currentStreak / (github.longestStreak || 1)) * 50 +
-    (leetcode.currentStreak / (leetcode.longestStreak || 1)) * 50)
+    ((github.consistency / (meta.totalDays || 1)) * 50 +
+    (leetcode.consistency / (meta.totalDays || 1)) * 50)
   );
 
   const activityScore = Math.round(
@@ -42,27 +41,27 @@ export default function UserStats({data}: {data: any}) {
   const rank = score > 50
     ? "CRACKED AF"
     : score > 40
-    ? "LUMINARY"
+    ? "GOD TIER"
     : score > 30
-    ? "POWERHOUSE"
+    ? "HARD CARRY"
     : score > 20
-    ? "ENTHUSIAST"
+    ? "BUILT DIFFERENT"
     : score > 10
-    ? "BIT FLIPPER"
-    : "CODE NEWBIE";
+    ? "UNDERDOG"
+    : "NEWBIE";
 
 
   const analysis = score > 50
-    ? "YOU'RE CRACKED AF"
+    ? "YOU'RE ABSOLUTELY GOATED!"
     : score > 40
-    ? "NICE STATS, YOU'RE DOING GREAT!"
+    ? "SHEESH! YOU'RE SLAYING IT!"
     : score > 30
-    ? "SHIT! YOU'RE ON A ROLL!!"
+    ? "NO CAP, YOU'RE POPPING OFF!"
     : score > 20
-    ? "YOU'RE GETTING THERE"
+    ? "SOLID EFFORT, YOU'RE LEVELING UP!"
     : score > 10
-    ? "YOU HAVE POTENTIAL"
-    : "MEH, YOU CAN DO BETTER";
+    ? "LOWKEY FIRE, KEEP GRINDING!"
+    : "EVERYONE STARTS SOMEWHERE, YOU GOT THIS!";
 
 
   const statsData = [
