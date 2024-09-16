@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function clearString(str: string) {
+  return str.trim().replace(/^@/, '');
+}
+
 export function getTileColor(githubCount: number, leetcodeCount: number) {
   if (githubCount === -1 || leetcodeCount === -1) {
     return "border-2 border-white/5"
