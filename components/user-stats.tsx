@@ -33,7 +33,7 @@ export default function UserStats({data}: {data: any}) {
   );
 
   const activityScore = Math.round(
-    Math.max(ghPerDay, lcPerDay) * 100
+    Math.max(ghPerDay, lcPerDay) * 50
     + (ghStreakRatio < 1 ? -(ghStreakRatio || 1 * 10) : (ghStreakRatio * 10))
     + (lcStreakRatio < 1 ? -(lcStreakRatio || 1 * 10) : (lcStreakRatio * 10))
   );
@@ -41,7 +41,7 @@ export default function UserStats({data}: {data: any}) {
   const rank = score > 50
     ? "CRACKED AF"
     : score > 40
-    ? "GOD TIER"
+    ? "MAIN CHARACTER"
     : score > 30
     ? "HARD CARRY"
     : score > 20
@@ -52,11 +52,11 @@ export default function UserStats({data}: {data: any}) {
 
 
   const analysis = score > 50
-    ? "YOU'RE ABSOLUTELY GOATED!"
+    ? "WELCOME TO THE CRACKED AF CLUB!"
     : score > 40
-    ? "SHEESH! YOU'RE SLAYING IT!"
+    ? "YOU'RE ABSOLUTELY GOATED!"
     : score > 30
-    ? "NO CAP, YOU'RE POPPING OFF!"
+    ? "NO CAP, YOU'RE COOKING HARD!"
     : score > 20
     ? "SOLID EFFORT, YOU'RE LEVELING UP!"
     : score > 10
@@ -65,14 +65,14 @@ export default function UserStats({data}: {data: any}) {
 
 
   const statsData = [
-    { text: "Consistency", value: consistencyScore },
+    { text: "Consistency", value: (data.ghID && data.lcID) ? consistencyScore : consistencyScore * 2 },
     { text: "Activity", value: activityScore },
     { text: "Overall", value: score }
   ]
 
   const metadata = [
     { text: 'Your Rank', value: rank },
-    { text: 'Points', value: score * 10 },
+    { text: 'Points', value: Math.round(score * 11.9801) },
     { text: 'Analysis', value: analysis }
   ]
 
