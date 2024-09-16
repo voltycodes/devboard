@@ -52,7 +52,7 @@ export default function UserStats({data}: {data: any}) {
 
 
   const analysis = score > 50
-    ? "WELCOME TO THE CRACKED AF CLUB!"
+    ? "SHEESH, SAVE SOME TALENT FOR THE REST OF US!"
     : score > 40
     ? "ABSOLUTELY GOATED! MAD RESPECT o7"
     : score > 30
